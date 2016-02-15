@@ -1,7 +1,7 @@
-TPC-H PostgreSQL benchmark
+TPC-H Greenplum benchmark
 ==========================
 This repository contains a simple implementation that runs a TPC-H-like
-benchmark with a PostgreSQL database. It builds on the official TPC-H
+benchmark with a Greenplum database. It builds on the official TPC-H
 benchmark available at http://tpc.org/tpch/default.asp (uses just the
 dbgen a qgen parts).
 
@@ -11,7 +11,7 @@ Preparing dbgen and qgen
 The first thing you need to do is to prepare the tool that generates
 data and queries. This step is more thoroughly explained at my blog at 
 
-    http://www.fuzzy.cz/en/articles/dss-tpc-h-benchmark-with-postgresql/
+    http://www.fuzzy.cz/en/articles/dss-tpc-h-benchmark-with-PostgreSQL/
 
 but let's briefly repeat what needs to be done.
 
@@ -52,7 +52,7 @@ which creates a bunch of .tbl files in Oracle-like CSV format
 
     $ ls *.tbl
 
-and to convert them to a CSV format compatible with PostgreSQL, do this
+and to convert them to a CSV format compatible with Greenplum, do this
 
     $ for i in `ls *.tbl`; do sed 's/|$//' $i > ${i/tbl/csv}; echo $i; done;
 
@@ -62,13 +62,13 @@ looking for for the data from).
 
 It's a good idea to place this directory on a ramdrive so that it does not
 influence the benchmark (e.g. it's a very bad idea to place the data on the
-same drive as PostgreSQL data directory).
+same drive as Greenplum data directory).
 
 
 Generating queries
 ------------------
 Now we have to generate queries from templates specified in TPC-H benchmark.
-The templates provided at tpch.org are not suitable for PostgreSQL. So
+The templates provided at tpch.org are not suitable for Greenplum. So
 I have provided slightly modified queries in the 'dss/templates' directory
 and you should place the queries in 'dss/queries' dir.
 
