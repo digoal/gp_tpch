@@ -1,7 +1,7 @@
-TPC-H Greenplum benchmark
+TPC-H PostgreSQL benchmark
 ==========================
 This repository contains a simple implementation that runs a TPC-H-like
-benchmark with a Greenplum database. It builds on the official TPC-H
+benchmark with a PostgreSQL database. It builds on the official TPC-H
 benchmark available at http://tpc.org/tpch/default.asp (uses just the
 dbgen a qgen parts).
 
@@ -11,7 +11,7 @@ Preparing dbgen and qgen
 The first thing you need to do is to prepare the tool that generates
 data and queries. This step is more thoroughly explained at my blog at 
 
-    http://www.fuzzy.cz/en/articles/dss-tpc-h-benchmark-with-PostgreSQL/
+    http://www.fuzzy.cz/en/articles/dss-tpc-h-benchmark-with-postgresql/
 
 but let's briefly repeat what needs to be done.
 
@@ -52,7 +52,7 @@ which creates a bunch of .tbl files in Oracle-like CSV format
 
     $ ls *.tbl
 
-and to convert them to a CSV format compatible with Greenplum, do this
+and to convert them to a CSV format compatible with PostgreSQL, do this
 
     $ for i in `ls *.tbl`; do sed 's/|$//' $i > ${i/tbl/csv}; echo $i; done;
 
@@ -62,21 +62,23 @@ looking for for the data from).
 
 It's a good idea to place this directory on a ramdrive so that it does not
 influence the benchmark (e.g. it's a very bad idea to place the data on the
-same drive as Greenplum data directory).
+same drive as PostgreSQL data directory).
 
 
 Generating queries
 ------------------
 Now we have to generate queries from templates specified in TPC-H benchmark.
-The templates provided at tpch.org are not suitable for Greenplum. So
+The templates provided at tpch.org are not suitable for PostgreSQL. So
 I have provided slightly modified queries in the 'dss/templates' directory
 and you should place the queries in 'dss/queries' dir.
+    
+    use the correct SF when dbgen -s specified.
 
+    SF=?
     for q in `seq 1 22`
     do
-        DSS_QUERY=dss/templates ./qgen $q >> dss/queries/$q.sql
+        DSS_QUERY=dss/templates ./qgen -s $SF $q > dss/queries/$q.sql
         sed 's/^select/explain select/' dss/queries/$q.sql > dss/queries/$q.explain.sql
-        cat dss/queries/$i.sql >> dss/queries/$i.explain.sql;
     done
 
 Now you should have 44 files in the dss/queries directory. 22 of them will
@@ -90,7 +92,7 @@ The actual benchmark is implemented in the 'tpch.sh' script. It expects
 an already prepared database and four parameters - directory where to place
 the results, database and user name. So to run it, do this:
 
-    $ ./tpch.sh ./results tpch-db tpch-user
+    $ ./tpch.sh ./results ip port tpch-db tpch-user row|column
 
 and wait until the benchmark.
 

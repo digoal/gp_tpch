@@ -1,0 +1,8 @@
+create index idx_part_P_PARTKEY on PART (P_PARTKEY);
+create index idx_SUPPLIER_S_SUPPKEY on SUPPLIER (S_SUPPKEY);
+create index idx_PARTSUPP_psps on PARTSUPP (PS_PARTKEY, PS_SUPPKEY);
+create index idx_CUSTOMER_C_CUSTKEY on CUSTOMER (C_CUSTKEY);
+create index idx_ORDERS_O_ORDERKEY ORDERS (O_ORDERKEY);
+create index idx_LINEITEM_ll LINEITEM (L_ORDERKEY, L_LINENUMBER);
+create index idx_NATION_N_NATIONKEY on NATION (N_NATIONKEY);
+create index idx_REGION_R_REGIONKEY on REGION (R_REGIONKEY);
