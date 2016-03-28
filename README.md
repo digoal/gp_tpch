@@ -92,7 +92,7 @@ The actual benchmark is implemented in the 'tpch.sh' script. It expects
 an already prepared database and four parameters - directory where to place
 the results, database and user name. So to run it, do this:
 
-    $ ./tpch.sh ./results ip port tpch-db tpch-user row|column
+    $ ./tpch.sh ./results ip port tpch-db tpch-user password row|column
 
 and wait until the benchmark.
 
@@ -104,6 +104,7 @@ useful results (timing of each query, various statistics), you can use script
 process.php. It expects two parameters - input dir (with data collected by the
 tpch.sh script) and output file (in CSV format). For example like this:
 
+    # yum install -y php
     $ php process.php ./results output.csv
 
 This should give you nicely formatted CSV file.
