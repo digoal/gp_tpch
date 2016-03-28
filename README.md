@@ -75,6 +75,7 @@ and you should place the queries in 'dss/queries' dir.
     use the correct SF when dbgen -s specified.
 
     SF=?
+    mkdir dss/queries
     for q in `seq 1 22`
     do
         DSS_QUERY=dss/templates ./qgen -s $SF $q > dss/queries/$q.sql
