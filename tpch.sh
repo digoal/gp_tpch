@@ -1,18 +1,19 @@
 #!/bin/sh
 
+if [ $# -ne 7 ]; then
+  echo "please use: $0 result_dir ip port dbname user pwd row|column"
+  exit 1
+fi
+
 RESULTS=$1
 IP=$2
 PORT=$3
 DBNAME=$4
 USER=$5
-STORAGE=$6
+PASSWORD=$6
+STORAGE=$7
 
-if [ $# -ne 6 ]; then
-  echo "please use: $0 result_dir ip port dbname user row|column"
-  exit 1
-fi
-
-if [ $STORAGE != 'row' && $STORAGE != 'column' ]; then
+if [ $STORAGE != 'row' ] && [ $STORAGE != 'column' ]; then
   echo "you must enter row or column."
   exit 1
 fi
@@ -23,6 +24,8 @@ if [ $? -ne 0 ]; then
   echo -e "dep commands: $DEP_CMD not exist."
   exit 1
 fi
+
+export PGPASSWORD=$PASSWORD
 
 # delay between stats collections (iostat, vmstat, ...)
 DELAY=15
