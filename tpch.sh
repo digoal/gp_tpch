@@ -1,7 +1,9 @@
 #!/bin/sh
 
-if [ $# -ne 7 ]; then
-  echo "please use: $0 result_dir ip port dbname user pwd row|column|redshift"
+if [ $# -ne 7 ] || [ $# -ne 10 ]; then
+  echo "please use: $0 result_dir ip port dbname user pwd { row|column }"
+  echo "or"
+  echo "$0 result_dir ip port dbname user pwd redshift s3_prefix ec2_id ec2_key"
   exit 1
 fi
 
@@ -19,9 +21,9 @@ if [ $STORAGE != 'row' ] && [ $STORAGE != 'column' ] && [ $STORAGE != 'redshift'
 fi
 
 if [ $STORAGE == 'redshift' ]; then
-S3=''
-EC2_ID=''
-EC2_KEY=''
+S3=$8
+EC2_ID=$9
+EC2_KEY=$10
 fi
 
 DEP_CMD="psql"
