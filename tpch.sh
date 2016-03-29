@@ -18,7 +18,7 @@ if [ $STORAGE != 'row' ] && [ $STORAGE != 'column' ] && [ $STORAGE != 'redshift'
   exit 1
 fi
 
-if [ $STORAGE != 'redshift' ]; then
+if [ $STORAGE == 'redshift' ]; then
 S3=''
 EC2_ID=''
 EC2_KEY=''
@@ -84,7 +84,7 @@ function benchmark_run() {
             TABLES="customer lineitem nation orders part partsupp region supplier"
             for table in $TABLES
             do
-              psql -h $IP -p $PORT -U $USER $DBNAME -c "copy ${table} from '$S3/${table}.manifest' credentials 'aws_access_key_id=$EC2_ID;aws_secret_access_key=$EC2_KEY' delimiter '|' ssh;" >> $RESULTS/load.log 2>> $RESULTS/load.err
+              psql -h $IP -p $PORT -U $USER $DBNAME -c "copy ${table} from '$S3/${table}.manifest' credentials 'aws_access_key_id=$EC2_ID;aws_secret_access_key=$EC2_KEY' delimiter '|' ssh" >> $RESULTS/load.log 2>> $RESULTS/load.err
             done
 
             #print_log "  creating foreign keys"

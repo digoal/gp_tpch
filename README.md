@@ -95,6 +95,11 @@ the results, database and user name. So to run it, do this:
 
     $ ./tpch.sh ./results ip port tpch-db tpch-user password row|column
 
+    Redshift (copy by ssh):
+    $ vi tpch.sh
+    add your S3, EC2_ID, EC2_KEY
+    manifest file must in $S3/${table}.manifest
+
 and wait until the benchmark.
 
 
