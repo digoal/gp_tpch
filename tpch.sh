@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ $# -ne 7 ]; then
-  echo "please use: $0 result_dir ip port dbname user pwd row|column"
+  echo "please use: $0 result_dir ip port dbname user pwd row|column|redshift"
   exit 1
 fi
 
@@ -13,8 +13,8 @@ USER=$5
 PASSWORD=$6
 STORAGE=$7
 
-if [ $STORAGE != 'row' ] && [ $STORAGE != 'column' ]; then
-  echo "you must enter row or column."
+if [ $STORAGE != 'row' ] && [ $STORAGE != 'column' ] && [ $STORAGE != 'redshift' ]; then
+  echo "you must enter { row | column | redshift }"
   exit 1
 fi
 
@@ -61,12 +61,25 @@ function benchmark_run() {
 
 	    #print_log "  creating foreign keys"
 	    #psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-alter.sql > $RESULTS/alter.log 2> $RESULTS/alter.err
-          else
+          elif [ $STORAGE == 'column' ]; then
             print_log "  loading data"
             psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-load.sql.column > $RESULTS/load.log 2> $RESULTS/load.err
 
             print_log "  creating primary keys"
             psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-pkeys.sql.column > $RESULTS/pkeys.log 2> $RESULTS/pkeys.err
+
+            #print_log "  creating foreign keys"
+            #psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-alter.sql > $RESULTS/alter.log 2> $RESULTS/alter.err
+          elif [ $STORAGE == 'redshift' ]; then
+            print_log "  create table"
+            psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-create.sql.redshift > $RESULTS/create.log 2> $RESULTS/create.err
+
+            print_log "  loading data"
+            TABLES="customer lineitem nation orders part partsupp region supplier"
+            for table in $TABLES
+            do
+              cat /tmp/dss-data/${table}.csv | psql -h $IP -p $PORT -U $USER $DBNAME -c "copy ${table} from stdin" >> $RESULTS/load.log 2>> $RESULTS/load.err
+            done
 
             #print_log "  creating foreign keys"
             #psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-alter.sql > $RESULTS/alter.log 2> $RESULTS/alter.err

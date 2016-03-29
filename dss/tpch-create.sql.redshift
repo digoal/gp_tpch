@@ -1,0 +1,87 @@
+BEGIN;
+        CREATE TABLE PART (
+                P_PARTKEY               INT8 distkey,
+                P_NAME                  VARCHAR(55),
+                P_MFGR                  CHAR(25),
+                P_BRAND                 CHAR(10),
+                P_TYPE                  VARCHAR(25),
+                P_SIZE                  INTEGER,
+                P_CONTAINER             CHAR(10),
+                P_RETAILPRICE   FLOAT8,
+                P_COMMENT               VARCHAR(23)
+        );
+
+        CREATE TABLE REGION (
+                R_REGIONKEY     INT8 distkey,
+                R_NAME          CHAR(25),
+                R_COMMENT       VARCHAR(152)
+        );
+
+        CREATE TABLE NATION (
+                N_NATIONKEY             INT8 distkey,
+                N_NAME                  CHAR(25),
+                N_REGIONKEY             BIGINT NOT NULL,  -- references R_REGIONKEY
+                N_COMMENT               VARCHAR(152)
+        );
+
+        CREATE TABLE SUPPLIER (
+                S_SUPPKEY               INT8 distkey,
+                S_NAME                  CHAR(25),
+                S_ADDRESS               VARCHAR(40),
+                S_NATIONKEY             BIGINT NOT NULL, -- references N_NATIONKEY
+                S_PHONE                 CHAR(15),
+                S_ACCTBAL               FLOAT8,
+                S_COMMENT               VARCHAR(101)
+        );
+
+        CREATE TABLE CUSTOMER (
+                C_CUSTKEY               INT8 distkey,
+                C_NAME                  VARCHAR(25),
+                C_ADDRESS               VARCHAR(40),
+                C_NATIONKEY             BIGINT NOT NULL, -- references N_NATIONKEY
+                C_PHONE                 CHAR(15),
+                C_ACCTBAL               FLOAT8,
+                C_MKTSEGMENT    CHAR(10),
+                C_COMMENT               VARCHAR(117)
+        );
+
+        CREATE TABLE PARTSUPP (
+                PS_PARTKEY              BIGINT NOT NULL distkey, -- references P_PARTKEY
+                PS_SUPPKEY              BIGINT NOT NULL, -- references S_SUPPKEY
+                PS_AVAILQTY             INTEGER,
+                PS_SUPPLYCOST   FLOAT8,
+                PS_COMMENT              VARCHAR(199)
+        );
+
+        CREATE TABLE ORDERS (
+                O_ORDERKEY              INT8 distkey,
+                O_CUSTKEY               BIGINT NOT NULL, -- references C_CUSTKEY
+                O_ORDERSTATUS   CHAR(1),
+                O_TOTALPRICE    FLOAT8,
+                O_ORDERDATE             DATE,
+                O_ORDERPRIORITY CHAR(15),
+                O_CLERK                 CHAR(15),
+                O_SHIPPRIORITY  INTEGER,
+                O_COMMENT               VARCHAR(79)
+        );
+
+        CREATE TABLE LINEITEM (
+                L_ORDERKEY              BIGINT NOT NULL distkey, -- references O_ORDERKEY
+                L_PARTKEY               BIGINT NOT NULL, -- references P_PARTKEY (compound fk to PARTSUPP)
+                L_SUPPKEY               BIGINT NOT NULL, -- references S_SUPPKEY (compound fk to PARTSUPP)
+                L_LINENUMBER    INTEGER,
+                L_QUANTITY              FLOAT8,
+                L_EXTENDEDPRICE FLOAT8,
+                L_DISCOUNT              FLOAT8,
+                L_TAX                   FLOAT8,
+                L_RETURNFLAG    CHAR(1),
+                L_LINESTATUS    CHAR(1),
+                L_SHIPDATE              DATE,
+                L_COMMITDATE    DATE,
+                L_RECEIPTDATE   DATE,
+                L_SHIPINSTRUCT  CHAR(25),
+                L_SHIPMODE              CHAR(10),
+                L_COMMENT               VARCHAR(44)
+        );
+
+COMMIT;
