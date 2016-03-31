@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ $# -ne 7 ] || [ $# -ne 10 ]; then
+if [ $# -ne 7 ] && [ $# -ne 10 ]; then
   echo "please use: $0 result_dir ip port dbname user pwd { row|column }"
   echo "or"
   echo "$0 result_dir ip port dbname user pwd redshift s3_prefix ec2_id ec2_key"
