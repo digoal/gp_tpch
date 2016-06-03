@@ -45,7 +45,8 @@ Right, so let's generate the data using the `dbgen` tool - there's one
 important parameter 'scale' that influences the amount of data. It's
 roughly equal to number of GB of raw data, so to generate 10GB of data
 just do
-
+    copy gp_tpch dir to big file system and then:  
+    $ ln -s `pwd` /tmp/dss-data
     $ ./dbgen -s 10
 
 which creates a bunch of .tbl files in Oracle-like CSV format
