@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ $# -ne 7 ] && [ $# -ne 10 ]; then
-  echo "please use: $0 result_dir ip port dbname user pwd { row|column }"
+  echo "please use: $0 result_dir ip port dbname user pwd { row|column|pg }"
   echo "or"
   echo "$0 result_dir ip port dbname user pwd redshift s3_prefix ec2_id ec2_key"
   exit 1
@@ -15,8 +15,8 @@ USER=$5
 PASSWORD=$6
 STORAGE=$7
 
-if [ $STORAGE != 'row' ] && [ $STORAGE != 'column' ] && [ $STORAGE != 'redshift' ]; then
-  echo "you must enter { row | column | redshift }"
+if [ $STORAGE != 'row' ] && [ $STORAGE != 'column' ] && [ $STORAGE != 'redshift' ] && [ $STORAGE != 'pg' ]; then
+  echo "you must enter { row | column | redshift | pg }"
   exit 1
 fi
 
@@ -91,6 +91,15 @@ function benchmark_run() {
 
             #print_log "  creating foreign keys"
             #psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-alter.sql > $RESULTS/alter.log 2> $RESULTS/alter.err
+          elif [ $STORAGE == 'pg' ]; then
+	    print_log "  loading data"
+	    psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-load.sql.pg > $RESULTS/load.log 2> $RESULTS/load.err
+
+	    print_log "  creating primary keys"
+	    psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-pkeys.sql.row > $RESULTS/pkeys.log 2> $RESULTS/pkeys.err
+
+	    #print_log "  creating foreign keys"
+	    #psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-alter.sql > $RESULTS/alter.log 2> $RESULTS/alter.err
           fi
 
 	  print_log "  creating indexes"
