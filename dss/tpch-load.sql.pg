@@ -349,4 +349,3 @@ BEGIN;
   COPY lineitem FROM '/tmp/dss-data/lineitem.csv' WITH (FORMAT csv, DELIMITER '|');
 
 COMMIT;
-
