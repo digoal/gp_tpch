@@ -1,133 +1,352 @@
 BEGIN;
 
-	CREATE TABLE PART (
+  CREATE UNLOGGED TABLE PART (
 
-		P_PARTKEY		SERIAL,
-		P_NAME			VARCHAR(55),
-		P_MFGR			CHAR(25),
-		P_BRAND			CHAR(10),
-		P_TYPE			VARCHAR(25),
-		P_SIZE			INTEGER,
-		P_CONTAINER		CHAR(10),
-		P_RETAILPRICE	FLOAT8,
-		P_COMMENT		VARCHAR(23)
-	);
+    P_PARTKEY    SERIAL8,
+    P_NAME      VARCHAR(55),
+    P_MFGR      CHAR(25),
+    P_BRAND      CHAR(10),
+    P_TYPE      VARCHAR(25),
+    P_SIZE      INTEGER,
+    P_CONTAINER    CHAR(10),
+    P_RETAILPRICE  FLOAT8,
+    P_COMMENT    VARCHAR(23)
+  );
 
-	COPY part FROM '/tmp/dss-data/part.csv' WITH csv DELIMITER '|';
-
-COMMIT;
-
-BEGIN;
-
-	CREATE TABLE REGION (
-		R_REGIONKEY	SERIAL,
-		R_NAME		CHAR(25),
-		R_COMMENT	VARCHAR(152)
-	);
-
-	COPY region FROM '/tmp/dss-data/region.csv' WITH (FORMAT csv, DELIMITER '|');
+  COPY part FROM '/tmp/dss-data/part.csv' WITH csv DELIMITER '|';
 
 COMMIT;
 
 BEGIN;
 
-	CREATE TABLE NATION (
-		N_NATIONKEY		SERIAL,
-		N_NAME			CHAR(25),
-		N_REGIONKEY		BIGINT NOT NULL,  -- references R_REGIONKEY
-		N_COMMENT		VARCHAR(152)
-	);
+  CREATE UNLOGGED TABLE REGION (
+    R_REGIONKEY  SERIAL8,
+    R_NAME    CHAR(25),
+    R_COMMENT  VARCHAR(152)
+  );
 
-	COPY nation FROM '/tmp/dss-data/nation.csv' WITH (FORMAT csv, DELIMITER '|');
-
-COMMIT;
-
-BEGIN;
-
-	CREATE TABLE SUPPLIER (
-		S_SUPPKEY		SERIAL,
-		S_NAME			CHAR(25),
-		S_ADDRESS		VARCHAR(40),
-		S_NATIONKEY		BIGINT NOT NULL, -- references N_NATIONKEY
-		S_PHONE			CHAR(15),
-		S_ACCTBAL		FLOAT8,
-		S_COMMENT		VARCHAR(101)
-	);
-
-	COPY supplier FROM '/tmp/dss-data/supplier.csv' WITH (FORMAT csv, DELIMITER '|');
+  COPY region FROM '/tmp/dss-data/region.csv' WITH (FORMAT csv, DELIMITER '|');
 
 COMMIT;
 
 BEGIN;
 
-	CREATE TABLE CUSTOMER (
-		C_CUSTKEY		SERIAL,
-		C_NAME			VARCHAR(25),
-		C_ADDRESS		VARCHAR(40),
-		C_NATIONKEY		BIGINT NOT NULL, -- references N_NATIONKEY
-		C_PHONE			CHAR(15),
-		C_ACCTBAL		FLOAT8,
-		C_MKTSEGMENT	CHAR(10),
-		C_COMMENT		VARCHAR(117)
-	);
+  CREATE UNLOGGED TABLE NATION (
+    N_NATIONKEY    SERIAL8,
+    N_NAME      CHAR(25),
+    N_REGIONKEY    BIGINT NOT NULL,  -- references R_REGIONKEY
+    N_COMMENT    VARCHAR(152)
+  );
 
-	COPY customer FROM '/tmp/dss-data/customer.csv' WITH (FORMAT csv, DELIMITER '|');
+  COPY nation FROM '/tmp/dss-data/nation.csv' WITH (FORMAT csv, DELIMITER '|');
 
 COMMIT;
 
 BEGIN;
 
-	CREATE TABLE PARTSUPP (
-		PS_PARTKEY		BIGINT NOT NULL, -- references P_PARTKEY
-		PS_SUPPKEY		BIGINT NOT NULL, -- references S_SUPPKEY
-		PS_AVAILQTY		INTEGER,
-		PS_SUPPLYCOST	FLOAT8,
-		PS_COMMENT		VARCHAR(199)
-	);
+  CREATE UNLOGGED TABLE SUPPLIER (
+    S_SUPPKEY    SERIAL8,
+    S_NAME      CHAR(25),
+    S_ADDRESS    VARCHAR(40),
+    S_NATIONKEY    BIGINT NOT NULL, -- references N_NATIONKEY
+    S_PHONE      CHAR(15),
+    S_ACCTBAL    FLOAT8,
+    S_COMMENT    VARCHAR(101)
+  );
 
-	COPY partsupp FROM '/tmp/dss-data/partsupp.csv' WITH (FORMAT csv, DELIMITER '|');
-
-COMMIT;
-
-BEGIN;
-
-	CREATE TABLE ORDERS (
-		O_ORDERKEY		SERIAL,
-		O_CUSTKEY		BIGINT NOT NULL, -- references C_CUSTKEY
-		O_ORDERSTATUS	CHAR(1),
-		O_TOTALPRICE	FLOAT8,
-		O_ORDERDATE		DATE,
-		O_ORDERPRIORITY	CHAR(15),
-		O_CLERK			CHAR(15),
-		O_SHIPPRIORITY	INTEGER,
-		O_COMMENT		VARCHAR(79)
-	);
-
-	COPY orders FROM '/tmp/dss-data/orders.csv' WITH (FORMAT csv, DELIMITER '|');
+  COPY supplier FROM '/tmp/dss-data/supplier.csv' WITH (FORMAT csv, DELIMITER '|');
 
 COMMIT;
 
 BEGIN;
 
-	CREATE TABLE LINEITEM (
-		L_ORDERKEY		BIGINT NOT NULL, -- references O_ORDERKEY
-		L_PARTKEY		BIGINT NOT NULL, -- references P_PARTKEY (compound fk to PARTSUPP)
-		L_SUPPKEY		BIGINT NOT NULL, -- references S_SUPPKEY (compound fk to PARTSUPP)
-		L_LINENUMBER	INTEGER,
-		L_QUANTITY		FLOAT8,
-		L_EXTENDEDPRICE	FLOAT8,
-		L_DISCOUNT		FLOAT8,
-		L_TAX			FLOAT8,
-		L_RETURNFLAG	CHAR(1),
-		L_LINESTATUS	CHAR(1),
-		L_SHIPDATE		DATE,
-		L_COMMITDATE	DATE,
-		L_RECEIPTDATE	DATE,
-		L_SHIPINSTRUCT	CHAR(25),
-		L_SHIPMODE		CHAR(10),
-		L_COMMENT		VARCHAR(44)
-	);
+  CREATE UNLOGGED TABLE CUSTOMER (
+    C_CUSTKEY    SERIAL8,
+    C_NAME      VARCHAR(25),
+    C_ADDRESS    VARCHAR(40),
+    C_NATIONKEY    BIGINT NOT NULL, -- references N_NATIONKEY
+    C_PHONE      CHAR(15),
+    C_ACCTBAL    FLOAT8,
+    C_MKTSEGMENT  CHAR(10),
+    C_COMMENT    VARCHAR(117)
+  );
 
-	COPY lineitem FROM '/tmp/dss-data/lineitem.csv' WITH (FORMAT csv, DELIMITER '|');
+  COPY customer FROM '/tmp/dss-data/customer.csv' WITH (FORMAT csv, DELIMITER '|');
 
 COMMIT;
+
+BEGIN;
+
+  CREATE UNLOGGED TABLE PARTSUPP (
+    PS_PARTKEY    BIGINT NOT NULL, -- references P_PARTKEY
+    PS_SUPPKEY    BIGINT NOT NULL, -- references S_SUPPKEY
+    PS_AVAILQTY    INTEGER,
+    PS_SUPPLYCOST  FLOAT8,
+    PS_COMMENT    VARCHAR(199)
+  );
+
+  COPY partsupp FROM '/tmp/dss-data/partsupp.csv' WITH (FORMAT csv, DELIMITER '|');
+
+COMMIT;
+
+BEGIN;
+
+  CREATE UNLOGGED TABLE ORDERS (
+    O_ORDERKEY  SERIAL8,
+    O_CUSTKEY  BIGINT NOT NULL, -- references C_CUSTKEY
+    O_ORDERSTATUS  CHAR(1),
+    O_TOTALPRICE  FLOAT8,
+    O_ORDERDATE  DATE,
+    O_ORDERPRIORITY  CHAR(15),
+    O_CLERK  CHAR(15),
+    O_SHIPPRIORITY  INTEGER,
+    O_COMMENT  VARCHAR(79)
+  );
+  
+  do language plpgsql $$ 
+  declare 
+    s date := '1992-01-01'; 
+    e date := '1999-01-01';
+    i date; 
+  begin 
+  for i in select date(generate_series(s,e,interval '1 month')) loop
+    execute 'CREATE unlogged table orders_'||to_char(i,'yyyymm')||' (like orders including all) inherits(orders)';
+    execute 'alter table orders_'||to_char(i,'yyyymm')||' add constraint ck_'||to_char(i,'yyyymm')||' check (O_ORDERDATE >= '''||i||''' and O_ORDERDATE < '''||date(i+interval '1 month')||''')';
+  end loop;
+  end;
+  $$;
+
+  create or replace function tg_orders_ins() returns trigger as $$
+  declare
+  begin
+       if new.O_ORDERDATE >= '1992-01-01' and new.O_ORDERDATE < '1992-02-01' then insert into orders_199201 values (new.*);
+    elsif new.O_ORDERDATE >= '1992-02-01' and new.O_ORDERDATE < '1992-03-01' then insert into orders_199202 values (new.*);
+    elsif new.O_ORDERDATE >= '1992-03-01' and new.O_ORDERDATE < '1992-04-01' then insert into orders_199203 values (new.*);
+    elsif new.O_ORDERDATE >= '1992-04-01' and new.O_ORDERDATE < '1992-05-01' then insert into orders_199204 values (new.*);
+    elsif new.O_ORDERDATE >= '1992-05-01' and new.O_ORDERDATE < '1992-06-01' then insert into orders_199205 values (new.*);
+    elsif new.O_ORDERDATE >= '1992-06-01' and new.O_ORDERDATE < '1992-07-01' then insert into orders_199206 values (new.*);
+    elsif new.O_ORDERDATE >= '1992-07-01' and new.O_ORDERDATE < '1992-08-01' then insert into orders_199207 values (new.*);
+    elsif new.O_ORDERDATE >= '1992-08-01' and new.O_ORDERDATE < '1992-09-01' then insert into orders_199208 values (new.*);
+    elsif new.O_ORDERDATE >= '1992-09-01' and new.O_ORDERDATE < '1992-10-01' then insert into orders_199209 values (new.*);
+    elsif new.O_ORDERDATE >= '1992-10-01' and new.O_ORDERDATE < '1992-11-01' then insert into orders_199210 values (new.*);
+    elsif new.O_ORDERDATE >= '1992-11-01' and new.O_ORDERDATE < '1992-12-01' then insert into orders_199211 values (new.*);
+    elsif new.O_ORDERDATE >= '1992-12-01' and new.O_ORDERDATE < '1993-01-01' then insert into orders_199212 values (new.*);
+    elsif new.O_ORDERDATE >= '1993-01-01' and new.O_ORDERDATE < '1993-02-01' then insert into orders_199301 values (new.*);
+    elsif new.O_ORDERDATE >= '1993-02-01' and new.O_ORDERDATE < '1993-03-01' then insert into orders_199302 values (new.*);
+    elsif new.O_ORDERDATE >= '1993-03-01' and new.O_ORDERDATE < '1993-04-01' then insert into orders_199303 values (new.*);
+    elsif new.O_ORDERDATE >= '1993-04-01' and new.O_ORDERDATE < '1993-05-01' then insert into orders_199304 values (new.*);
+    elsif new.O_ORDERDATE >= '1993-05-01' and new.O_ORDERDATE < '1993-06-01' then insert into orders_199305 values (new.*);
+    elsif new.O_ORDERDATE >= '1993-06-01' and new.O_ORDERDATE < '1993-07-01' then insert into orders_199306 values (new.*);
+    elsif new.O_ORDERDATE >= '1993-07-01' and new.O_ORDERDATE < '1993-08-01' then insert into orders_199307 values (new.*);
+    elsif new.O_ORDERDATE >= '1993-08-01' and new.O_ORDERDATE < '1993-09-01' then insert into orders_199308 values (new.*);
+    elsif new.O_ORDERDATE >= '1993-09-01' and new.O_ORDERDATE < '1993-10-01' then insert into orders_199309 values (new.*);
+    elsif new.O_ORDERDATE >= '1993-10-01' and new.O_ORDERDATE < '1993-11-01' then insert into orders_199310 values (new.*);
+    elsif new.O_ORDERDATE >= '1993-11-01' and new.O_ORDERDATE < '1993-12-01' then insert into orders_199311 values (new.*);
+    elsif new.O_ORDERDATE >= '1993-12-01' and new.O_ORDERDATE < '1994-01-01' then insert into orders_199312 values (new.*);
+    elsif new.O_ORDERDATE >= '1994-01-01' and new.O_ORDERDATE < '1994-02-01' then insert into orders_199401 values (new.*);
+    elsif new.O_ORDERDATE >= '1994-02-01' and new.O_ORDERDATE < '1994-03-01' then insert into orders_199402 values (new.*);
+    elsif new.O_ORDERDATE >= '1994-03-01' and new.O_ORDERDATE < '1994-04-01' then insert into orders_199403 values (new.*);
+    elsif new.O_ORDERDATE >= '1994-04-01' and new.O_ORDERDATE < '1994-05-01' then insert into orders_199404 values (new.*);
+    elsif new.O_ORDERDATE >= '1994-05-01' and new.O_ORDERDATE < '1994-06-01' then insert into orders_199405 values (new.*);
+    elsif new.O_ORDERDATE >= '1994-06-01' and new.O_ORDERDATE < '1994-07-01' then insert into orders_199406 values (new.*);
+    elsif new.O_ORDERDATE >= '1994-07-01' and new.O_ORDERDATE < '1994-08-01' then insert into orders_199407 values (new.*);
+    elsif new.O_ORDERDATE >= '1994-08-01' and new.O_ORDERDATE < '1994-09-01' then insert into orders_199408 values (new.*);
+    elsif new.O_ORDERDATE >= '1994-09-01' and new.O_ORDERDATE < '1994-10-01' then insert into orders_199409 values (new.*);
+    elsif new.O_ORDERDATE >= '1994-10-01' and new.O_ORDERDATE < '1994-11-01' then insert into orders_199410 values (new.*);
+    elsif new.O_ORDERDATE >= '1994-11-01' and new.O_ORDERDATE < '1994-12-01' then insert into orders_199411 values (new.*);
+    elsif new.O_ORDERDATE >= '1994-12-01' and new.O_ORDERDATE < '1995-01-01' then insert into orders_199412 values (new.*);
+    elsif new.O_ORDERDATE >= '1995-01-01' and new.O_ORDERDATE < '1995-02-01' then insert into orders_199501 values (new.*);
+    elsif new.O_ORDERDATE >= '1995-02-01' and new.O_ORDERDATE < '1995-03-01' then insert into orders_199502 values (new.*);
+    elsif new.O_ORDERDATE >= '1995-03-01' and new.O_ORDERDATE < '1995-04-01' then insert into orders_199503 values (new.*);
+    elsif new.O_ORDERDATE >= '1995-04-01' and new.O_ORDERDATE < '1995-05-01' then insert into orders_199504 values (new.*);
+    elsif new.O_ORDERDATE >= '1995-05-01' and new.O_ORDERDATE < '1995-06-01' then insert into orders_199505 values (new.*);
+    elsif new.O_ORDERDATE >= '1995-06-01' and new.O_ORDERDATE < '1995-07-01' then insert into orders_199506 values (new.*);
+    elsif new.O_ORDERDATE >= '1995-07-01' and new.O_ORDERDATE < '1995-08-01' then insert into orders_199507 values (new.*);
+    elsif new.O_ORDERDATE >= '1995-08-01' and new.O_ORDERDATE < '1995-09-01' then insert into orders_199508 values (new.*);
+    elsif new.O_ORDERDATE >= '1995-09-01' and new.O_ORDERDATE < '1995-10-01' then insert into orders_199509 values (new.*);
+    elsif new.O_ORDERDATE >= '1995-10-01' and new.O_ORDERDATE < '1995-11-01' then insert into orders_199510 values (new.*);
+    elsif new.O_ORDERDATE >= '1995-11-01' and new.O_ORDERDATE < '1995-12-01' then insert into orders_199511 values (new.*);
+    elsif new.O_ORDERDATE >= '1995-12-01' and new.O_ORDERDATE < '1996-01-01' then insert into orders_199512 values (new.*);
+    elsif new.O_ORDERDATE >= '1996-01-01' and new.O_ORDERDATE < '1996-02-01' then insert into orders_199601 values (new.*);
+    elsif new.O_ORDERDATE >= '1996-02-01' and new.O_ORDERDATE < '1996-03-01' then insert into orders_199602 values (new.*);
+    elsif new.O_ORDERDATE >= '1996-03-01' and new.O_ORDERDATE < '1996-04-01' then insert into orders_199603 values (new.*);
+    elsif new.O_ORDERDATE >= '1996-04-01' and new.O_ORDERDATE < '1996-05-01' then insert into orders_199604 values (new.*);
+    elsif new.O_ORDERDATE >= '1996-05-01' and new.O_ORDERDATE < '1996-06-01' then insert into orders_199605 values (new.*);
+    elsif new.O_ORDERDATE >= '1996-06-01' and new.O_ORDERDATE < '1996-07-01' then insert into orders_199606 values (new.*);
+    elsif new.O_ORDERDATE >= '1996-07-01' and new.O_ORDERDATE < '1996-08-01' then insert into orders_199607 values (new.*);
+    elsif new.O_ORDERDATE >= '1996-08-01' and new.O_ORDERDATE < '1996-09-01' then insert into orders_199608 values (new.*);
+    elsif new.O_ORDERDATE >= '1996-09-01' and new.O_ORDERDATE < '1996-10-01' then insert into orders_199609 values (new.*);
+    elsif new.O_ORDERDATE >= '1996-10-01' and new.O_ORDERDATE < '1996-11-01' then insert into orders_199610 values (new.*);
+    elsif new.O_ORDERDATE >= '1996-11-01' and new.O_ORDERDATE < '1996-12-01' then insert into orders_199611 values (new.*);
+    elsif new.O_ORDERDATE >= '1996-12-01' and new.O_ORDERDATE < '1997-01-01' then insert into orders_199612 values (new.*);
+    elsif new.O_ORDERDATE >= '1997-01-01' and new.O_ORDERDATE < '1997-02-01' then insert into orders_199701 values (new.*);
+    elsif new.O_ORDERDATE >= '1997-02-01' and new.O_ORDERDATE < '1997-03-01' then insert into orders_199702 values (new.*);
+    elsif new.O_ORDERDATE >= '1997-03-01' and new.O_ORDERDATE < '1997-04-01' then insert into orders_199703 values (new.*);
+    elsif new.O_ORDERDATE >= '1997-04-01' and new.O_ORDERDATE < '1997-05-01' then insert into orders_199704 values (new.*);
+    elsif new.O_ORDERDATE >= '1997-05-01' and new.O_ORDERDATE < '1997-06-01' then insert into orders_199705 values (new.*);
+    elsif new.O_ORDERDATE >= '1997-06-01' and new.O_ORDERDATE < '1997-07-01' then insert into orders_199706 values (new.*);
+    elsif new.O_ORDERDATE >= '1997-07-01' and new.O_ORDERDATE < '1997-08-01' then insert into orders_199707 values (new.*);
+    elsif new.O_ORDERDATE >= '1997-08-01' and new.O_ORDERDATE < '1997-09-01' then insert into orders_199708 values (new.*);
+    elsif new.O_ORDERDATE >= '1997-09-01' and new.O_ORDERDATE < '1997-10-01' then insert into orders_199709 values (new.*);
+    elsif new.O_ORDERDATE >= '1997-10-01' and new.O_ORDERDATE < '1997-11-01' then insert into orders_199710 values (new.*);
+    elsif new.O_ORDERDATE >= '1997-11-01' and new.O_ORDERDATE < '1997-12-01' then insert into orders_199711 values (new.*);
+    elsif new.O_ORDERDATE >= '1997-12-01' and new.O_ORDERDATE < '1998-01-01' then insert into orders_199712 values (new.*);
+    elsif new.O_ORDERDATE >= '1998-01-01' and new.O_ORDERDATE < '1998-02-01' then insert into orders_199801 values (new.*);
+    elsif new.O_ORDERDATE >= '1998-02-01' and new.O_ORDERDATE < '1998-03-01' then insert into orders_199802 values (new.*);
+    elsif new.O_ORDERDATE >= '1998-03-01' and new.O_ORDERDATE < '1998-04-01' then insert into orders_199803 values (new.*);
+    elsif new.O_ORDERDATE >= '1998-04-01' and new.O_ORDERDATE < '1998-05-01' then insert into orders_199804 values (new.*);
+    elsif new.O_ORDERDATE >= '1998-05-01' and new.O_ORDERDATE < '1998-06-01' then insert into orders_199805 values (new.*);
+    elsif new.O_ORDERDATE >= '1998-06-01' and new.O_ORDERDATE < '1998-07-01' then insert into orders_199806 values (new.*);
+    elsif new.O_ORDERDATE >= '1998-07-01' and new.O_ORDERDATE < '1998-08-01' then insert into orders_199807 values (new.*);
+    elsif new.O_ORDERDATE >= '1998-08-01' and new.O_ORDERDATE < '1998-09-01' then insert into orders_199808 values (new.*);
+    elsif new.O_ORDERDATE >= '1998-09-01' and new.O_ORDERDATE < '1998-10-01' then insert into orders_199809 values (new.*);
+    elsif new.O_ORDERDATE >= '1998-10-01' and new.O_ORDERDATE < '1998-11-01' then insert into orders_199810 values (new.*);
+    elsif new.O_ORDERDATE >= '1998-11-01' and new.O_ORDERDATE < '1998-12-01' then insert into orders_199811 values (new.*);
+    elsif new.O_ORDERDATE >= '1998-12-01' and new.O_ORDERDATE < '1999-01-01' then insert into orders_199812 values (new.*);
+    else
+      raise;
+    end if;
+  return null;
+  end;
+  $$ language plpgsql strict;
+
+  create trigger tg1 before insert on orders for each row execute procedure tg_orders_ins();
+
+  COPY orders FROM '/tmp/dss-data/orders.csv' WITH (FORMAT csv, DELIMITER '|');
+
+COMMIT;
+
+BEGIN;
+
+  CREATE UNLOGGED TABLE LINEITEM (
+    L_ORDERKEY BIGINT NOT NULL, -- references O_ORDERKEY
+    L_PARTKEY BIGINT NOT NULL, -- references P_PARTKEY (compound fk to PARTSUPP)
+    L_SUPPKEY BIGINT NOT NULL, -- references S_SUPPKEY (compound fk to PARTSUPP)
+    L_LINENUMBER INTEGER,
+    L_QUANTITY FLOAT8,
+    L_EXTENDEDPRICE FLOAT8,
+    L_DISCOUNT FLOAT8,
+    L_TAX FLOAT8,
+    L_RETURNFLAG CHAR(1),
+    L_LINESTATUS CHAR(1),
+    L_SHIPDATE DATE,
+    L_COMMITDATE  DATE,
+    L_RECEIPTDATE  DATE,
+    L_SHIPINSTRUCT  CHAR(25),
+    L_SHIPMODE    CHAR(10),
+    L_COMMENT    VARCHAR(44)
+  );
+
+  do language plpgsql $$ 
+  declare 
+    s date := '1992-01-01'; 
+    e date := '1999-01-01';
+    i date; 
+  begin 
+  for i in select date(generate_series(s,e,interval '1 month')) loop
+    execute 'CREATE unlogged table LINEITEM_'||to_char(i,'yyyymm')||' (like LINEITEM including all) inherits(LINEITEM)';
+    execute 'alter table LINEITEM_'||to_char(i,'yyyymm')||' add constraint ck_'||to_char(i,'yyyymm')||' check (L_SHIPDATE >= '''||i||''' and L_SHIPDATE < '''||date(i+interval '1 month')||''')';
+  end loop;
+  end;
+  $$;
+
+  create or replace function tg_lineitem_ins() returns trigger as $$
+  declare
+  begin
+       if new.L_SHIPDATE >= '1992-01-01' and new.L_SHIPDATE < '1992-02-01' then insert into LINEITEM_199201 values (new.*);
+    elsif new.L_SHIPDATE >= '1992-02-01' and new.L_SHIPDATE < '1992-03-01' then insert into LINEITEM_199202 values (new.*);
+    elsif new.L_SHIPDATE >= '1992-03-01' and new.L_SHIPDATE < '1992-04-01' then insert into LINEITEM_199203 values (new.*);
+    elsif new.L_SHIPDATE >= '1992-04-01' and new.L_SHIPDATE < '1992-05-01' then insert into LINEITEM_199204 values (new.*);
+    elsif new.L_SHIPDATE >= '1992-05-01' and new.L_SHIPDATE < '1992-06-01' then insert into LINEITEM_199205 values (new.*);
+    elsif new.L_SHIPDATE >= '1992-06-01' and new.L_SHIPDATE < '1992-07-01' then insert into LINEITEM_199206 values (new.*);
+    elsif new.L_SHIPDATE >= '1992-07-01' and new.L_SHIPDATE < '1992-08-01' then insert into LINEITEM_199207 values (new.*);
+    elsif new.L_SHIPDATE >= '1992-08-01' and new.L_SHIPDATE < '1992-09-01' then insert into LINEITEM_199208 values (new.*);
+    elsif new.L_SHIPDATE >= '1992-09-01' and new.L_SHIPDATE < '1992-10-01' then insert into LINEITEM_199209 values (new.*);
+    elsif new.L_SHIPDATE >= '1992-10-01' and new.L_SHIPDATE < '1992-11-01' then insert into LINEITEM_199210 values (new.*);
+    elsif new.L_SHIPDATE >= '1992-11-01' and new.L_SHIPDATE < '1992-12-01' then insert into LINEITEM_199211 values (new.*);
+    elsif new.L_SHIPDATE >= '1992-12-01' and new.L_SHIPDATE < '1993-01-01' then insert into LINEITEM_199212 values (new.*);
+    elsif new.L_SHIPDATE >= '1993-01-01' and new.L_SHIPDATE < '1993-02-01' then insert into LINEITEM_199301 values (new.*);
+    elsif new.L_SHIPDATE >= '1993-02-01' and new.L_SHIPDATE < '1993-03-01' then insert into LINEITEM_199302 values (new.*);
+    elsif new.L_SHIPDATE >= '1993-03-01' and new.L_SHIPDATE < '1993-04-01' then insert into LINEITEM_199303 values (new.*);
+    elsif new.L_SHIPDATE >= '1993-04-01' and new.L_SHIPDATE < '1993-05-01' then insert into LINEITEM_199304 values (new.*);
+    elsif new.L_SHIPDATE >= '1993-05-01' and new.L_SHIPDATE < '1993-06-01' then insert into LINEITEM_199305 values (new.*);
+    elsif new.L_SHIPDATE >= '1993-06-01' and new.L_SHIPDATE < '1993-07-01' then insert into LINEITEM_199306 values (new.*);
+    elsif new.L_SHIPDATE >= '1993-07-01' and new.L_SHIPDATE < '1993-08-01' then insert into LINEITEM_199307 values (new.*);
+    elsif new.L_SHIPDATE >= '1993-08-01' and new.L_SHIPDATE < '1993-09-01' then insert into LINEITEM_199308 values (new.*);
+    elsif new.L_SHIPDATE >= '1993-09-01' and new.L_SHIPDATE < '1993-10-01' then insert into LINEITEM_199309 values (new.*);
+    elsif new.L_SHIPDATE >= '1993-10-01' and new.L_SHIPDATE < '1993-11-01' then insert into LINEITEM_199310 values (new.*);
+    elsif new.L_SHIPDATE >= '1993-11-01' and new.L_SHIPDATE < '1993-12-01' then insert into LINEITEM_199311 values (new.*);
+    elsif new.L_SHIPDATE >= '1993-12-01' and new.L_SHIPDATE < '1994-01-01' then insert into LINEITEM_199312 values (new.*);
+    elsif new.L_SHIPDATE >= '1994-01-01' and new.L_SHIPDATE < '1994-02-01' then insert into LINEITEM_199401 values (new.*);
+    elsif new.L_SHIPDATE >= '1994-02-01' and new.L_SHIPDATE < '1994-03-01' then insert into LINEITEM_199402 values (new.*);
+    elsif new.L_SHIPDATE >= '1994-03-01' and new.L_SHIPDATE < '1994-04-01' then insert into LINEITEM_199403 values (new.*);
+    elsif new.L_SHIPDATE >= '1994-04-01' and new.L_SHIPDATE < '1994-05-01' then insert into LINEITEM_199404 values (new.*);
+    elsif new.L_SHIPDATE >= '1994-05-01' and new.L_SHIPDATE < '1994-06-01' then insert into LINEITEM_199405 values (new.*);
+    elsif new.L_SHIPDATE >= '1994-06-01' and new.L_SHIPDATE < '1994-07-01' then insert into LINEITEM_199406 values (new.*);
+    elsif new.L_SHIPDATE >= '1994-07-01' and new.L_SHIPDATE < '1994-08-01' then insert into LINEITEM_199407 values (new.*);
+    elsif new.L_SHIPDATE >= '1994-08-01' and new.L_SHIPDATE < '1994-09-01' then insert into LINEITEM_199408 values (new.*);
+    elsif new.L_SHIPDATE >= '1994-09-01' and new.L_SHIPDATE < '1994-10-01' then insert into LINEITEM_199409 values (new.*);
+    elsif new.L_SHIPDATE >= '1994-10-01' and new.L_SHIPDATE < '1994-11-01' then insert into LINEITEM_199410 values (new.*);
+    elsif new.L_SHIPDATE >= '1994-11-01' and new.L_SHIPDATE < '1994-12-01' then insert into LINEITEM_199411 values (new.*);
+    elsif new.L_SHIPDATE >= '1994-12-01' and new.L_SHIPDATE < '1995-01-01' then insert into LINEITEM_199412 values (new.*);
+    elsif new.L_SHIPDATE >= '1995-01-01' and new.L_SHIPDATE < '1995-02-01' then insert into LINEITEM_199501 values (new.*);
+    elsif new.L_SHIPDATE >= '1995-02-01' and new.L_SHIPDATE < '1995-03-01' then insert into LINEITEM_199502 values (new.*);
+    elsif new.L_SHIPDATE >= '1995-03-01' and new.L_SHIPDATE < '1995-04-01' then insert into LINEITEM_199503 values (new.*);
+    elsif new.L_SHIPDATE >= '1995-04-01' and new.L_SHIPDATE < '1995-05-01' then insert into LINEITEM_199504 values (new.*);
+    elsif new.L_SHIPDATE >= '1995-05-01' and new.L_SHIPDATE < '1995-06-01' then insert into LINEITEM_199505 values (new.*);
+    elsif new.L_SHIPDATE >= '1995-06-01' and new.L_SHIPDATE < '1995-07-01' then insert into LINEITEM_199506 values (new.*);
+    elsif new.L_SHIPDATE >= '1995-07-01' and new.L_SHIPDATE < '1995-08-01' then insert into LINEITEM_199507 values (new.*);
+    elsif new.L_SHIPDATE >= '1995-08-01' and new.L_SHIPDATE < '1995-09-01' then insert into LINEITEM_199508 values (new.*);
+    elsif new.L_SHIPDATE >= '1995-09-01' and new.L_SHIPDATE < '1995-10-01' then insert into LINEITEM_199509 values (new.*);
+    elsif new.L_SHIPDATE >= '1995-10-01' and new.L_SHIPDATE < '1995-11-01' then insert into LINEITEM_199510 values (new.*);
+    elsif new.L_SHIPDATE >= '1995-11-01' and new.L_SHIPDATE < '1995-12-01' then insert into LINEITEM_199511 values (new.*);
+    elsif new.L_SHIPDATE >= '1995-12-01' and new.L_SHIPDATE < '1996-01-01' then insert into LINEITEM_199512 values (new.*);
+    elsif new.L_SHIPDATE >= '1996-01-01' and new.L_SHIPDATE < '1996-02-01' then insert into LINEITEM_199601 values (new.*);
+    elsif new.L_SHIPDATE >= '1996-02-01' and new.L_SHIPDATE < '1996-03-01' then insert into LINEITEM_199602 values (new.*);
+    elsif new.L_SHIPDATE >= '1996-03-01' and new.L_SHIPDATE < '1996-04-01' then insert into LINEITEM_199603 values (new.*);
+    elsif new.L_SHIPDATE >= '1996-04-01' and new.L_SHIPDATE < '1996-05-01' then insert into LINEITEM_199604 values (new.*);
+    elsif new.L_SHIPDATE >= '1996-05-01' and new.L_SHIPDATE < '1996-06-01' then insert into LINEITEM_199605 values (new.*);
+    elsif new.L_SHIPDATE >= '1996-06-01' and new.L_SHIPDATE < '1996-07-01' then insert into LINEITEM_199606 values (new.*);
+    elsif new.L_SHIPDATE >= '1996-07-01' and new.L_SHIPDATE < '1996-08-01' then insert into LINEITEM_199607 values (new.*);
+    elsif new.L_SHIPDATE >= '1996-08-01' and new.L_SHIPDATE < '1996-09-01' then insert into LINEITEM_199608 values (new.*);
+    elsif new.L_SHIPDATE >= '1996-09-01' and new.L_SHIPDATE < '1996-10-01' then insert into LINEITEM_199609 values (new.*);
+    elsif new.L_SHIPDATE >= '1996-10-01' and new.L_SHIPDATE < '1996-11-01' then insert into LINEITEM_199610 values (new.*);
+    elsif new.L_SHIPDATE >= '1996-11-01' and new.L_SHIPDATE < '1996-12-01' then insert into LINEITEM_199611 values (new.*);
+    elsif new.L_SHIPDATE >= '1996-12-01' and new.L_SHIPDATE < '1997-01-01' then insert into LINEITEM_199612 values (new.*);
+    elsif new.L_SHIPDATE >= '1997-01-01' and new.L_SHIPDATE < '1997-02-01' then insert into LINEITEM_199701 values (new.*);
+    elsif new.L_SHIPDATE >= '1997-02-01' and new.L_SHIPDATE < '1997-03-01' then insert into LINEITEM_199702 values (new.*);
+    elsif new.L_SHIPDATE >= '1997-03-01' and new.L_SHIPDATE < '1997-04-01' then insert into LINEITEM_199703 values (new.*);
+    elsif new.L_SHIPDATE >= '1997-04-01' and new.L_SHIPDATE < '1997-05-01' then insert into LINEITEM_199704 values (new.*);
+    elsif new.L_SHIPDATE >= '1997-05-01' and new.L_SHIPDATE < '1997-06-01' then insert into LINEITEM_199705 values (new.*);
+    elsif new.L_SHIPDATE >= '1997-06-01' and new.L_SHIPDATE < '1997-07-01' then insert into LINEITEM_199706 values (new.*);
+    elsif new.L_SHIPDATE >= '1997-07-01' and new.L_SHIPDATE < '1997-08-01' then insert into LINEITEM_199707 values (new.*);
+    elsif new.L_SHIPDATE >= '1997-08-01' and new.L_SHIPDATE < '1997-09-01' then insert into LINEITEM_199708 values (new.*);
+    elsif new.L_SHIPDATE >= '1997-09-01' and new.L_SHIPDATE < '1997-10-01' then insert into LINEITEM_199709 values (new.*);
+    elsif new.L_SHIPDATE >= '1997-10-01' and new.L_SHIPDATE < '1997-11-01' then insert into LINEITEM_199710 values (new.*);
+    elsif new.L_SHIPDATE >= '1997-11-01' and new.L_SHIPDATE < '1997-12-01' then insert into LINEITEM_199711 values (new.*);
+    elsif new.L_SHIPDATE >= '1997-12-01' and new.L_SHIPDATE < '1998-01-01' then insert into LINEITEM_199712 values (new.*);
+    elsif new.L_SHIPDATE >= '1998-01-01' and new.L_SHIPDATE < '1998-02-01' then insert into LINEITEM_199801 values (new.*);
+    elsif new.L_SHIPDATE >= '1998-02-01' and new.L_SHIPDATE < '1998-03-01' then insert into LINEITEM_199802 values (new.*);
+    elsif new.L_SHIPDATE >= '1998-03-01' and new.L_SHIPDATE < '1998-04-01' then insert into LINEITEM_199803 values (new.*);
+    elsif new.L_SHIPDATE >= '1998-04-01' and new.L_SHIPDATE < '1998-05-01' then insert into LINEITEM_199804 values (new.*);
+    elsif new.L_SHIPDATE >= '1998-05-01' and new.L_SHIPDATE < '1998-06-01' then insert into LINEITEM_199805 values (new.*);
+    elsif new.L_SHIPDATE >= '1998-06-01' and new.L_SHIPDATE < '1998-07-01' then insert into LINEITEM_199806 values (new.*);
+    elsif new.L_SHIPDATE >= '1998-07-01' and new.L_SHIPDATE < '1998-08-01' then insert into LINEITEM_199807 values (new.*);
+    elsif new.L_SHIPDATE >= '1998-08-01' and new.L_SHIPDATE < '1998-09-01' then insert into LINEITEM_199808 values (new.*);
+    elsif new.L_SHIPDATE >= '1998-09-01' and new.L_SHIPDATE < '1998-10-01' then insert into LINEITEM_199809 values (new.*);
+    elsif new.L_SHIPDATE >= '1998-10-01' and new.L_SHIPDATE < '1998-11-01' then insert into LINEITEM_199810 values (new.*);
+    elsif new.L_SHIPDATE >= '1998-11-01' and new.L_SHIPDATE < '1998-12-01' then insert into LINEITEM_199811 values (new.*);
+    elsif new.L_SHIPDATE >= '1998-12-01' and new.L_SHIPDATE < '1999-01-01' then insert into LINEITEM_199812 values (new.*);
+    else
+      raise;
+    end if;
+  return null;
+  end;
+  $$ language plpgsql strict;
+
+  create trigger tg1 before insert on lineitem for each row execute procedure tg_LINEITEM_ins();
+
+  COPY lineitem FROM '/tmp/dss-data/lineitem.csv' WITH (FORMAT csv, DELIMITER '|');
+
+COMMIT;
+
