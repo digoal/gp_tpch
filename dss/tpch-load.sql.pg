@@ -103,6 +103,8 @@ BEGIN;
     O_COMMENT  VARCHAR(79)
   );
   
+  ALTER TABLE ORDERS ADD PRIMARY KEY (O_ORDERKEY);
+
   do language plpgsql $$ 
   declare 
     s date := '1992-01-01'; 
@@ -236,7 +238,9 @@ BEGIN;
     L_SHIPMODE    CHAR(10),
     L_COMMENT    VARCHAR(44)
   );
-
+  
+  ALTER TABLE LINEITEM ADD PRIMARY KEY (L_ORDERKEY, L_LINENUMBER);
+  
   do language plpgsql $$ 
   declare 
     s date := '1992-01-01'; 
