@@ -83,7 +83,8 @@ and you should place the queries in 'dss/queries' dir.
         DSS_QUERY=dss/templates ./qgen -s $SF $q > dss/queries/$q.sql
         sed 's/^select/explain select/' dss/queries/$q.sql > dss/queries/$q.explain.sql
     done
-
+    
+    NOTE: modify query's interval syntax.
 Now you should have 44 files in the dss/queries directory. 22 of them will
 actually run the queries and the other 22 will generate EXPLAIN plan of
 the query (without actually running it).
