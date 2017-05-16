@@ -11,7 +11,7 @@ create view revenue:s (supplier_no, total_revenue) as
 		lineitem
 	where
 		l_shipdate >= date ':1'
-		and l_shipdate < date ':1' + interval '3' month
+		and l_shipdate < date ':1' + interval '3 month'
 	group by
 		l_suppkey;
 
