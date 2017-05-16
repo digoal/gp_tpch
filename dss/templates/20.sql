@@ -25,7 +25,7 @@ where
 					lineitem
 				where
 					l_shipdate >= date ':2'
-					and l_shipdate < date ':2' + interval '1' year
+					and l_shipdate < date ':2' + interval '1 year'
 				group by
 					l_partkey,
 					l_suppkey
