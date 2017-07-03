@@ -108,7 +108,7 @@ BEGIN;
   declare
     x date := '1992-01-01';
   begin
-    for s in 0..82 loop 
+    for s in 0..83 loop 
       execute 'CREATE TABLE ORDERS_ptr_'||s||' PARTITION OF ORDERS FOR VALUES FROM ('''||date(x+((s)||' month')::interval)||''') TO ('''||date(x+((s+1)||' month')::interval)||''')';
     end loop;
   end;
@@ -151,7 +151,7 @@ BEGIN;
   declare
     x date := '1992-01-01';
   begin
-    for s in 0..82 loop 
+    for s in 0..83 loop 
       execute 'CREATE TABLE LINEITEM_ptr_'||s||' PARTITION OF LINEITEM FOR VALUES FROM ('''||date(x+((s)||' month')::interval)||''') TO ('''||date(x+((s+1)||' month')::interval)||''')';
     end loop;
   end;
