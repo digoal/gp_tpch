@@ -1,3 +1,5 @@
+set default_statistics_target = 1000;
+
 BEGIN;
 
   CREATE TABLE PART (
@@ -13,7 +15,11 @@ BEGIN;
     P_COMMENT    VARCHAR(23)
   );
 
+  alter table part set (parallel_workers =64);
+
   COPY part FROM '/tmp/dss-data/part.csv' WITH csv DELIMITER '|';
+
+  create index idx_part_1 on part (p_partkey);
 
 COMMIT;
 
@@ -26,6 +32,9 @@ BEGIN;
   );
 
   COPY region FROM '/tmp/dss-data/region.csv' WITH (FORMAT csv, DELIMITER '|');
+
+  create index idx_region_1 on region (r_regionkey);
+  create index idx_region_2 on region (r_name);
 
 COMMIT;
 
@@ -40,6 +49,9 @@ BEGIN;
 
   COPY nation FROM '/tmp/dss-data/nation.csv' WITH (FORMAT csv, DELIMITER '|');
 
+  create index idx_NATION_1 on NATION (n_nationkey);
+  create index idx_NATION_2 on NATION (n_name);
+
 COMMIT;
 
 BEGIN;
@@ -53,8 +65,13 @@ BEGIN;
     S_ACCTBAL    FLOAT8,
     S_COMMENT    VARCHAR(101)
   );
+  
+  alter table SUPPLIER set (parallel_workers =64);
 
   COPY supplier FROM '/tmp/dss-data/supplier.csv' WITH (FORMAT csv, DELIMITER '|');
+
+  create index idx_SUPPLIER_1 on SUPPLIER (s_name);
+  create index idx_SUPPLIER_2 on SUPPLIER (s_suppkey);
 
 COMMIT;
 
@@ -71,7 +88,12 @@ BEGIN;
     C_COMMENT    VARCHAR(117)
   );
 
+  alter table CUSTOMER set (parallel_workers =64);
+
   COPY customer FROM '/tmp/dss-data/customer.csv' WITH (FORMAT csv, DELIMITER '|');
+
+  create index idx_CUSTOMER_1 on CUSTOMER (c_custkey);
+  create index idx_CUSTOMER_2 on CUSTOMER (c_name);
 
 COMMIT;
 
@@ -85,11 +107,27 @@ BEGIN;
     PS_COMMENT    VARCHAR(199)
   );
 
+  alter table PARTSUPP set (parallel_workers =64);
+
   COPY partsupp FROM '/tmp/dss-data/partsupp.csv' WITH (FORMAT csv, DELIMITER '|');
+
+  create index idx_PARTSUPP_1 on PARTSUPP (ps_partkey);
 
 COMMIT;
 
 BEGIN;
+
+  CREATE temp TABLE tmp_ORDERS (
+    O_ORDERKEY  SERIAL8,
+    O_CUSTKEY  BIGINT NOT NULL, -- references C_CUSTKEY
+    O_ORDERSTATUS  CHAR(1),
+    O_TOTALPRICE  FLOAT8,
+    O_ORDERDATE  DATE,
+    O_ORDERPRIORITY  CHAR(15),
+    O_CLERK  CHAR(15),
+    O_SHIPPRIORITY  INTEGER,
+    O_COMMENT  VARCHAR(79)
+  ) ;
 
   CREATE TABLE ORDERS (
     O_ORDERKEY  SERIAL8,
@@ -101,8 +139,36 @@ BEGIN;
     O_CLERK  CHAR(15),
     O_SHIPPRIORITY  INTEGER,
     O_COMMENT  VARCHAR(79)
+  ) ;
+
+  alter table ORDERS set (parallel_workers =64);
+
+  COPY tmp_orders FROM '/tmp/dss-data/orders.csv' WITH (FORMAT csv, DELIMITER '|');
+
+  insert into ORDERS select * from tmp_ORDERS order by O_ORDERDATE, o_orderstatus;
+
+  drop table tmp_ORDERS;
+
+  create index idx_ORDERS_1 on ORDERS using brin (o_orderstatus);
+  create index idx_ORDERS_2 on ORDERS using brin (o_orderdate);
+  create index idx_ORDERS_3 on ORDERS (o_orderkey);
+  create index idx_ORDERS_4 on ORDERS (o_orderkey) WHERE o_orderstatus = 'F';
+  create index idx_ORDERS_5 on ORDERS (o_orderkey) WHERE o_orderstatus = 'O';
+  create index idx_ORDERS_6 on ORDERS (o_orderkey) WHERE o_orderstatus = 'P';
+
+
+/*
+  CREATE TABLE ORDERS (
+    O_ORDERKEY  SERIAL8,
+    O_CUSTKEY  BIGINT NOT NULL, -- references C_CUSTKEY
+    O_ORDERSTATUS  CHAR(1),
+    O_TOTALPRICE  FLOAT8,
+    O_ORDERDATE  DATE,
+    O_ORDERPRIORITY  CHAR(15),
+    O_CLERK  CHAR(15),
+    O_SHIPPRIORITY  INTEGER,
+    O_COMMENT  VARCHAR(79)
   ) PARTITION BY RANGE (O_ORDERDATE);
-  
 
   do language plpgsql $$
   declare
@@ -113,9 +179,8 @@ BEGIN;
     end loop;
   end;
   $$;
+*/
   
-  COPY orders FROM '/tmp/dss-data/orders.csv' WITH (FORMAT csv, DELIMITER '|');
-
 /* 
   -- partition table do not support index now.
 
@@ -127,6 +192,59 @@ BEGIN;
 COMMIT;
 
 BEGIN;
+
+  CREATE temp TABLE tmp_LINEITEM (
+    L_ORDERKEY BIGINT NOT NULL, -- references O_ORDERKEY
+    L_PARTKEY BIGINT NOT NULL, -- references P_PARTKEY (compound fk to PARTSUPP)
+    L_SUPPKEY BIGINT NOT NULL, -- references S_SUPPKEY (compound fk to PARTSUPP)
+    L_LINENUMBER INTEGER,
+    L_QUANTITY FLOAT8,
+    L_EXTENDEDPRICE FLOAT8,
+    L_DISCOUNT FLOAT8,
+    L_TAX FLOAT8,
+    L_RETURNFLAG CHAR(1),
+    L_LINESTATUS CHAR(1),
+    L_SHIPDATE DATE,
+    L_COMMITDATE  DATE,
+    L_RECEIPTDATE  DATE,
+    L_SHIPINSTRUCT  CHAR(25),
+    L_SHIPMODE    CHAR(10),
+    L_COMMENT    VARCHAR(44)
+  );
+
+  CREATE TABLE LINEITEM (
+    L_ORDERKEY BIGINT NOT NULL, -- references O_ORDERKEY
+    L_PARTKEY BIGINT NOT NULL, -- references P_PARTKEY (compound fk to PARTSUPP)
+    L_SUPPKEY BIGINT NOT NULL, -- references S_SUPPKEY (compound fk to PARTSUPP)
+    L_LINENUMBER INTEGER,
+    L_QUANTITY FLOAT8,
+    L_EXTENDEDPRICE FLOAT8,
+    L_DISCOUNT FLOAT8,
+    L_TAX FLOAT8,
+    L_RETURNFLAG CHAR(1),
+    L_LINESTATUS CHAR(1),
+    L_SHIPDATE DATE,
+    L_COMMITDATE  DATE,
+    L_RECEIPTDATE  DATE,
+    L_SHIPINSTRUCT  CHAR(25),
+    L_SHIPMODE    CHAR(10),
+    L_COMMENT    VARCHAR(44)
+  );
+
+  alter table LINEITEM set (parallel_workers =64);
+
+  COPY lineitem FROM '/tmp/dss-data/lineitem.csv' WITH (FORMAT csv, DELIMITER '|');
+
+
+  insert into LINEITEM select * from tmp_LINEITEM order by l_shipdate;
+
+  drop table tmp_LINEITEM;
+
+  create index idx_LINEITEM_1 on LINEITEM using brin (l_shipdate);
+  create index idx_LINEITEM_2 on LINEITEM (l_orderkey);
+
+
+/*
 
   CREATE TABLE LINEITEM (
     L_ORDERKEY BIGINT NOT NULL, -- references O_ORDERKEY
@@ -157,7 +275,7 @@ BEGIN;
   end;
   $$;
   
-  COPY lineitem FROM '/tmp/dss-data/lineitem.csv' WITH (FORMAT csv, DELIMITER '|');
+*/
 
 /* 
   -- partition table do not support index now.
