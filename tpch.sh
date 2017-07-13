@@ -15,8 +15,8 @@ USER=$5
 PASSWORD=$6
 STORAGE=$7
 
-if [ $STORAGE != 'row' ] && [ $STORAGE != 'column' ] && [ $STORAGE != 'redshift' ] && [ $STORAGE != 'pg' ]; then
-  echo "you must enter { row | column | redshift | pg }"
+if [ $STORAGE != 'row' ] && [ $STORAGE != 'column' ] && [ $STORAGE != 'redshift' ] && [ $STORAGE != 'pg' ] && [ $STORAGE != 'pg10' ]; then
+  echo "you must enter { row | column | redshift | pg | pg10 }"
   exit 1
 fi
 
@@ -100,13 +100,22 @@ function benchmark_run() {
 
 	    #print_log "  creating foreign keys"
 	    #psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-alter.sql > $RESULTS/alter.log 2> $RESULTS/alter.err
+
+	  elif [ $STORAGE == 'pg10' ]; then
+	    print_log "  loading data"
+	    psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-load.sql.pg > $RESULTS/load.log 2> $RESULTS/load.err
           fi
 
-	  print_log "  creating indexes"
-	  psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-index.sql > $RESULTS/index.log 2> $RESULTS/index.err
+          if [ $STORAGE == 'pg10' ]; then
+	    print_log "  analyzing"
+	    psql -h $IP -p $PORT -U $USER $DBNAME -c "set default_statistics_target =1000; analyze;" > $RESULTS/analyze.log 2> $RESULTS/analyze.err
+          else
+	    print_log "  creating indexes"
+	    psql -h $IP -p $PORT -U $USER $DBNAME < dss/tpch-index.sql > $RESULTS/index.log 2> $RESULTS/index.err
 
-	  print_log "  analyzing"
-	  psql -h $IP -p $PORT -U $USER $DBNAME -c "analyze" > $RESULTS/analyze.log 2> $RESULTS/analyze.err
+	    print_log "  analyzing"
+	    psql -h $IP -p $PORT -U $USER $DBNAME -c "analyze" > $RESULTS/analyze.log 2> $RESULTS/analyze.err
+          fi
         fi
 
 	print_log "running TPC-H benchmark"
