@@ -96,7 +96,7 @@ The actual benchmark is implemented in the 'tpch.sh' script. It expects
 an already prepared database and four parameters - directory where to place
 the results, database and user name. So to run it, do this:
 
-    $ ./tpch.sh ./results ip port tpch-db tpch-user password {row|column|redshift|pg}
+    $ ./tpch.sh ./results ip port tpch-db tpch-user password {row|column|redshift|pg|pg10|citus}
 
     Redshift (copy by ssh):
     // add manifest file to s3 first
@@ -104,6 +104,7 @@ the results, database and user name. So to run it, do this:
     $ ./tpch.sh ./results ip port tpch-db tpch-user password redshift S3 EC2_ID EC2_KEY
 
 and wait until the benchmark.
+(pg 10: no indexes)
 
 
 Processing the results
