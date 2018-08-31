@@ -11,7 +11,7 @@ BEGIN;
     P_CONTAINER    CHAR(10),
     P_RETAILPRICE  FLOAT8,
     P_COMMENT    VARCHAR(23)
-  );
+  ) with (autovacuum_enabled=off , toast.autovacuum_enabled=off);
 
   COPY part FROM '/tmp/dss-data/part.csv' WITH csv DELIMITER '|';
 
@@ -23,7 +23,7 @@ BEGIN;
     R_REGIONKEY  SERIAL8,
     R_NAME    CHAR(25),
     R_COMMENT  VARCHAR(152)
-  );
+  ) with (autovacuum_enabled=off , toast.autovacuum_enabled=off);
 
   COPY region FROM '/tmp/dss-data/region.csv' WITH (FORMAT csv, DELIMITER '|');
 
@@ -36,7 +36,7 @@ BEGIN;
     N_NAME      CHAR(25),
     N_REGIONKEY    BIGINT NOT NULL,  -- references R_REGIONKEY
     N_COMMENT    VARCHAR(152)
-  );
+  ) with (autovacuum_enabled=off , toast.autovacuum_enabled=off);
 
   COPY nation FROM '/tmp/dss-data/nation.csv' WITH (FORMAT csv, DELIMITER '|');
 
@@ -52,7 +52,7 @@ BEGIN;
     S_PHONE      CHAR(15),
     S_ACCTBAL    FLOAT8,
     S_COMMENT    VARCHAR(101)
-  );
+  ) with (autovacuum_enabled=off , toast.autovacuum_enabled=off);
 
   COPY supplier FROM '/tmp/dss-data/supplier.csv' WITH (FORMAT csv, DELIMITER '|');
 
@@ -69,7 +69,7 @@ BEGIN;
     C_ACCTBAL    FLOAT8,
     C_MKTSEGMENT  CHAR(10),
     C_COMMENT    VARCHAR(117)
-  );
+  ) with (autovacuum_enabled=off , toast.autovacuum_enabled=off);
 
   COPY customer FROM '/tmp/dss-data/customer.csv' WITH (FORMAT csv, DELIMITER '|');
 
@@ -83,7 +83,7 @@ BEGIN;
     PS_AVAILQTY    INTEGER,
     PS_SUPPLYCOST  FLOAT8,
     PS_COMMENT    VARCHAR(199)
-  );
+  ) with (autovacuum_enabled=off , toast.autovacuum_enabled=off);
 
   COPY partsupp FROM '/tmp/dss-data/partsupp.csv' WITH (FORMAT csv, DELIMITER '|');
 
@@ -101,7 +101,7 @@ BEGIN;
     O_CLERK  CHAR(15),
     O_SHIPPRIORITY  INTEGER,
     O_COMMENT  VARCHAR(79)
-  );
+  ) with (autovacuum_enabled=off , toast.autovacuum_enabled=off);
   
 /*
   ALTER TABLE ORDERS ADD PRIMARY KEY (O_ORDERKEY);
@@ -246,7 +246,7 @@ BEGIN;
     L_SHIPINSTRUCT  CHAR(25),
     L_SHIPMODE    CHAR(10),
     L_COMMENT    VARCHAR(44)
-  );
+  ) with (autovacuum_enabled=off , toast.autovacuum_enabled=off);
   
 /*
 
